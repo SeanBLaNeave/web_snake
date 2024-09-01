@@ -32,9 +32,17 @@ const ground1 = new Image()
 ground1.src = "/img/ground1.png"
 const ground2 = new Image()
 ground2.src = "/img/ground2.png"
+const snake_tail_right = new Image();
+snake_tail_right.src = "/img/snake-tail-right.png";
+const snake_tail_left = new Image();
+snake_tail_left.src = "/img/snake-tail-left.png";
+const snake_tail_up = new Image();
+snake_tail_up.src = "/img/snake-tail-up.png";
+const snake_tail_down = new Image();
+snake_tail_down.src = "/img/snake-tail-bottom.png";
 
 
-const snake = [{x: 2, y: 0, img: snake_head_right}, {x: 1, y: 0, img: snake_straight}, {x: 0, y: 0, img: snake_straight}];
+const snake = [{x: 2, y: 0, img: snake_head_right}, {x: 1, y: 0, img: snake_straight}, {x: 0, y: 0, img: snake_tail_right}];
 var direct = 'right';
 var newDirect = 'right';
 var count = 0;
@@ -63,16 +71,16 @@ function animateGame(){
 window.addEventListener('keydown', (event) => {
     switch(event.code){
         case 'KeyS' :
-            newDirect = 'down';
+            direct != 'up' ? newDirect = 'down' : newDirect = direct;
             break;
         case 'KeyW' :
-            newDirect = 'up';
+            direct != 'down' ? newDirect = 'up' : newDirect = direct;
             break;
         case 'KeyD' :
-            newDirect = 'right';
+            direct != 'left' ? newDirect = 'right' : newDirect = direct;    
             break;
         case 'KeyA' :
-            newDirect = 'left';
+            direct != 'right' ? newDirect = 'left' : newDirect = direct;
             break;
         default:
             console.error('Invalid input', event.code);
@@ -86,13 +94,12 @@ function addFood(){
             food = {x: Math.floor(Math.random() * 18), y: Math.floor(Math.random() * 18), img: apple};
         }
     }
-    ctx.drawImage(food.img, food.x * 32, food.y * 32, 32, 32)
+    ctx.drawImage(food.img, food.x * tileSize, food.y * tileSize, tileSize, tileSize)
 }
 
 function move(){
-    var tempHead = {...snake[0]};
     var temp = {...snake[1]};
-    snake[1] = tempHead;
+    snake[1] = {...snake[0]};
     switch(newDirect){
         case 'right':
             snake[0]["x"] += 1;
@@ -116,25 +123,53 @@ function move(){
     var dictMoves = {rightright: snake_straight, upup: snake_up_down, downdown: snake_up_down,
                     leftleft: snake_straight, upright: snake_down_left, downright: snake_up_left,
                     upleft: snake_down_right, downleft: snake_up_right, rightdown: snake_down_right,
-                    leftdown: snake_down_left, leftup: snake_up_left, rightup: snake_up_right}
+                    leftdown: snake_down_left, leftup: snake_up_left, rightup: snake_up_right};
     snake[1]["img"] = dictMoves[newDirect + direct];
     for(let i = 2; i < snake.length; i++){
         var newTemp = {...snake[i]};
-        snake[i] = temp;
+        if(i === (snake.length - 1)){
+            snake[i]['x'] = temp.x;
+            snake[i]['y'] = temp.y;
+            if(temp.img != snake_straight || temp.img != snake_up_down){
+                snake[i]['img'] = tailImg(snake[i], temp);
+            }
+        }else{
+            snake[i] = temp;
+        }
         temp = newTemp;
     }
     direct = newDirect;
 }
 
+var tailImg = (tail, snakePart) => {
+    var img = tail.img;
+    switch(snakePart.img){
+        case snake_down_left :
+            img = img === snake_tail_right ? snake_tail_up : snake_tail_left;
+            return img;
+        case snake_down_right :
+            img = img === snake_tail_left ? snake_tail_up : snake_tail_right;
+            return img;
+        case snake_up_right :
+            img = img === snake_tail_up ? snake_tail_right : snake_tail_down;
+            return img;
+        case snake_up_left :
+            img = img === snake_tail_up ? snake_tail_left : snake_tail_down;
+            return img;
+        default:
+            return img;
+    }
+}
+
 function draw(){
     for(let i = 0; i < snake.length; i++){
-        ctx.drawImage(snake[i]["img"], snake[i]["x"] * 32, snake[i]["y"] * 32, 32, 32);
+        ctx.drawImage(snake[i]["img"], snake[i]["x"] * tileSize, snake[i]["y"] * tileSize, tileSize, tileSize);
     }
 }
 
 function addToSnake(){
     if(snake[0]["x"] === food.x && snake[0]["y"] === food.y){
-        var temp = {...snake[0]}
+        var temp = {...snake[snake.length - 1]}
         snake.push(temp);
         var score = document.getElementById('score')
         score.innerHTML = parseInt(score.textContent, 10) + 1;
@@ -147,10 +182,10 @@ function drawBackGround(){
     for(let i = 0; i < 18; i++){
         for(let j = 0; j < 18; j++){
             if(groundType){
-                ctx.drawImage(ground2, i * 32, j * 32, 32, 32);
+                ctx.drawImage(ground2, i * tileSize, j * tileSize, tileSize, tileSize);
                 groundType = false;
             }else{
-                ctx.drawImage(ground1, i * 32, j * 32, 32, 32);
+                ctx.drawImage(ground1, i * tileSize, j * tileSize, tileSize, tileSize);
                 groundType = true;
             }
         }
@@ -160,10 +195,12 @@ function drawBackGround(){
 
 function collision() {
     var head = snake[0];
-    if (head.x < 0 || head.x > 17 || head.y < 0 || head.y > 17 || 
-        snake.slice(1, snake.length - 1).find(element => element.x === head.x && element.y === head.y)) {
+    if (head.x < 0 || head.x > 17 || head.y < 0 || head.y > 17 || snake.slice(1, snake.length - 1).find(element => element.x === head.x && element.y === head.y)) {
         console.log('Collision detected');
         window.cancelAnimationFrame(requestId);
+        ctx.font = "80px Arial";
+        ctx.textAlign = "center"
+        ctx.fillText("Game Over", (18 * tileSize) / 2, (18 * tileSize) / 2);
         return;
     }
 }

@@ -10,6 +10,7 @@ h1 {
 
 #board {
     border: #000 solid 3px;
+    border-radius: 1rem;
 }
 
 #score {
