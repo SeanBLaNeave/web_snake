@@ -48,22 +48,25 @@ var newDirect = 'right';
 var count = 0;
 var food = null;
 let requestId;
+var fpsInterval, now, then, elapsed; 
 
 function startGame(){
+    fpsInterval = 1000 / 10; 
+    then = Date.now();
     requestId = requestAnimationFrame(animateGame);
-    console.log(requestId)
 }
 
 function animateGame(){
-    if(count === 8){
+    now = Date.now(); 
+    elapsed = now - then;
+    if(elapsed > fpsInterval){
         drawBackGround();
         draw();
         addFood()
         move();
         addToSnake();
-        count = 0;
+        then = now - (elapsed % fpsInterval);
     }
-    count += 1;
     requestId = window.requestAnimationFrame(animateGame);
     collision();
 }
