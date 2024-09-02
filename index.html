@@ -6,13 +6,34 @@
     <link rel="stylesheet" href="style.css">
     <title>Snake game</title>
 </head>
-<body>
-    <h1>Snake Game</h1>
-    <div class="layout">
-        <canvas id="board"></canvas>
-        <h4 id="score">0</h4>
-        <button type="button" onclick="startGame()">Start</button>
+<body style="margin: 0px; background-image: linear-gradient(315deg, rgb(30, 182, 0) 20%, rgb(0, 217, 255));">
+    <div class="flex-container">
+        <div class="flex-item">
+            <h4 class="word" id="score">0</h4>
+            <h4 class="word">Score</h4>
+            <h4 class="word" id="record">0</h4>
+            <h4 class="word">Record</h4>
+            <button type="button" id="start">Start</button>
+        </div>
+        <div class="layout">
+            <canvas id="board"></canvas>
+        </div>
+        <div class="flex-item">
+            <div class="slideContainer">
+                <h4 class="word">Speed</h4>
+                <input type="range" min="2" max="14" value="8" id="speed" class="slider">
+            </div>
+            <div class="slideContainer">
+                <h4 class="word">X-Size</h4>
+                <input type="range" min="8" max="16" value="12" id="xsize" class="slider">
+            </div>
+            <div class="slideContainer">
+                <h4 class="word">Y-Size</h4>
+                <input type="range" min="8" max="16" value="12" id="ysize" class="slider">
+            </div>
+            <button type="button" id="save">Save</button>
+        </div>
     </div>
 </body>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </html>
