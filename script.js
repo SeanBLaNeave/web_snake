@@ -164,6 +164,9 @@ function collision(){
     var head = snake[0];
     if(head.x < 0 || head.x > xSize - 1|| head.y < 0 || head.y > ySize - 1|| snake.slice(1, snake.length - 1).find(element => element.x === head.x && element.y === head.y)) {
         console.log('Collision detected');
+        for(let i = 0; i < snake.length; i++){
+            delete snake[i];
+        };
         window.cancelAnimationFrame(requestId);
         ctx.font = (board.width / 7) + "px Arial";
         ctx.textAlign = "center";
@@ -176,6 +179,9 @@ function collision(){
 function youWin(){
     if(snake.length === ySize * xSize){
         console.log("You Win");
+        for(let i = 0; i < snake.length; i++){
+            delete snake[i];
+        };
         window.cancelAnimationFrame(requestId);
         ctx.font = (board.width / 7) + "px Arial";
         ctx.textAlign = "center";
