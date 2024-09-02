@@ -149,6 +149,7 @@ function addToSnake(){
 }
 
 function drawBackGround(){
+    console.log('hi')
     var groundType = true;
     for(let i = 0; i < xSize; i++){
         for(let j = 0; j < ySize; j++){
@@ -212,4 +213,5 @@ document.getElementById('save').addEventListener('click', () => {
     fpsInterval = 1000 / parseInt(document.getElementById("speed").value, 10);
     board.width = tileSize * xSize;
     board.height = tileSize * ySize;
+    drawBackGround();
 });
